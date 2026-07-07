@@ -6,9 +6,12 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
+  const dbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key";
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    dbUrl,
+    key,
     {
       cookies: {
         getAll() {
@@ -28,9 +31,15 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Do NOT rely on client session checks. Verify from Supabase getUser()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    if (dbUrl !== "https://placeholder.supabase.co") {
+      const { data } = await supabase.auth.getUser();
+      user = data.user;
+    }
+  } catch (err) {
+    console.error("Middleware session verification error:", err);
+  }
 
   const url = request.nextUrl.clone();
 
