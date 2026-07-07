@@ -4,10 +4,14 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, RefreshCw, Send } from "lucide-react";
 
+import { createClient } from "@/lib/supabase/client";
+
 export default function ContactPage() {
+  const supabase = createClient();
   const [mounted, setMounted] = useState(false);
   const [captchaCode, setCaptchaCode] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -36,17 +40,38 @@ export default function ContactPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (captchaInput.toUpperCase() !== captchaCode) {
       alert("Verification code is incorrect. Please try again.");
       return;
     }
-    alert("Thank you! Your message has been sent successfully.");
-    // Reset form
-    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
-    setCaptchaInput("");
-    generateCaptcha();
+
+    try {
+      setLoading(true);
+      const { error } = await supabase.from("contact_enquiries").insert([
+        {
+          full_name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          subject: formData.subject,
+          message: formData.message,
+        },
+      ]);
+
+      if (error) throw error;
+
+      alert("Thank you! Your message has been sent successfully.");
+      // Reset form
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      setCaptchaInput("");
+      generateCaptcha();
+    } catch (err) {
+      console.error("Submit contact enquiry error:", err);
+      alert("Failed to submit message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -303,10 +328,11 @@ export default function ContactPage() {
                 <div className="pt-2">
                   <button
                     type="submit"
-                    className="w-full flex items-center justify-center gap-2 px-8 py-4 text-xs font-bold uppercase tracking-wider text-white bg-primary-navy hover:bg-[#C9A227] hover:text-primary-navy hover:scale-[1.02] transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#C9A227] shadow-lg cursor-pointer"
+                    disabled={loading}
+                    className="w-full flex items-center justify-center gap-2 px-8 py-4 text-xs font-bold uppercase tracking-wider text-white bg-primary-navy hover:bg-[#C9A227] hover:text-primary-navy hover:scale-[1.02] transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#C9A227] shadow-lg cursor-pointer disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
                   >
                     <Send size={13} />
-                    <span>Send Message</span>
+                    <span>{loading ? "Sending..." : "Send Message"}</span>
                   </button>
                 </div>
 

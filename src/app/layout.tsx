@@ -17,9 +17,7 @@ export const metadata: Metadata = {
     "Professional Chartered Accountant and Legal Consultancy firm offering expert services in taxation, legal advisory, business consulting, and corporate advisory.",
 };
 
-import TopBar from "@/components/layout/TopBar";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import { ClientLayoutWrapper } from "@/components/layout/ClientLayoutWrapper";
 
 export default function RootLayout({
   children,
@@ -32,11 +30,7 @@ export default function RootLayout({
       className={`${inter.variable} ${manrope.variable} scroll-smooth`}
     >
       <body className="font-sans antialiased text-text-primary bg-bg-warm min-h-screen flex flex-col">
-        <SmoothScroll>
-          <Navbar />
-          {children}
-          <Footer />
-        </SmoothScroll>
+        <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
       </body>
     </html>
   );
