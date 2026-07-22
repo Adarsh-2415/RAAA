@@ -37,7 +37,7 @@ export const navigationItems: NavItem[] = [
   },
   {
     label: "Latest Updates",
-    href: "/updates",
+    href: "/latest-updates",
   },
   {
     label: "Careers",

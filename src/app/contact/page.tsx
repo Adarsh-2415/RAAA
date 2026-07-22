@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, RefreshCw, Send } from "lucide-react";
+import { Mail, Phone, MapPin, RefreshCw, Send, CheckCircle2, AlertCircle } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
 
@@ -12,6 +12,7 @@ export default function ContactPage() {
   const [captchaCode, setCaptchaCode] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -43,7 +44,7 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (captchaInput.toUpperCase() !== captchaCode) {
-      alert("Verification code is incorrect. Please try again.");
+      setNotification({ type: "error", message: "Verification code is incorrect. Please try again." });
       return;
     }
 
@@ -61,14 +62,32 @@ export default function ContactPage() {
 
       if (error) throw error;
 
-      alert("Thank you! Your message has been sent successfully.");
+      // Trigger email notification background dispatch
+      try {
+        await fetch("/api/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "contact",
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            subject: formData.subject,
+            message: formData.message,
+          }),
+        });
+      } catch (mailErr) {
+        console.warn("Background notification trigger dispatch failed:", mailErr);
+      }
+
+      setNotification({ type: "success", message: "Thank you! Your message has been sent successfully." });
       // Reset form
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
       setCaptchaInput("");
       generateCaptcha();
     } catch (err) {
       console.error("Submit contact enquiry error:", err);
-      alert("Failed to submit message. Please try again.");
+      setNotification({ type: "error", message: "Failed to submit message. Please try again." });
     } finally {
       setLoading(false);
     }
@@ -204,6 +223,26 @@ export default function ContactPage() {
               </span>
 
               <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+                
+                {/* Custom Styled Notification Banner */}
+                {notification && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`p-4 rounded-xl flex items-start gap-3 border ${
+                      notification.type === "success"
+                        ? "bg-green-50 border-green-200 text-green-800"
+                        : "bg-red-50 border-red-200 text-red-800"
+                    }`}
+                  >
+                    {notification.type === "success" ? (
+                      <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                    )}
+                    <p className="text-xs font-medium leading-relaxed font-sans">{notification.message}</p>
+                  </motion.div>
+                )}
                 
                 {/* Row 1: Name and Email */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

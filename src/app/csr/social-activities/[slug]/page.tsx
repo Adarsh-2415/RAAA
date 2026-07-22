@@ -1,12 +1,16 @@
-import { CSRDetailsSection } from "@/components/sections/csr/details";
+import { ActivityDetailsLoader } from "@/components/sections/csr/activity-details-loader";
 
-export default function SocialActivitiesDetailsPage() {
-  // Reuse the CSR module. Empty props are passed by default.
+interface SocialActivitiesDetailsPageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default function SocialActivitiesDetailsPage({ params }: SocialActivitiesDetailsPageProps) {
   return (
-    <CSRDetailsSection
-      activity={null}
+    <ActivityDetailsLoader
+      category="social-activities"
       breadcrumbLabel="Social Activities"
       baseRoute="/csr/social-activities"
+      paramsPromise={params}
     />
   );
 }

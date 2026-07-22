@@ -1,12 +1,9 @@
-import { CSRListingSection } from "@/components/sections/csr";
+import { CategoryListingLoader } from "@/components/sections/csr/category-listing-loader";
 
 export default function SkillDevelopmentPage() {
-  // Built around CMS data. Empty props are passed by default.
   return (
-    <CSRListingSection
-      activities={[]}
-      isLoading={false}
-      error={null}
+    <CategoryListingLoader
+      category="skill-development"
       pageTitle="Skill Development Programs"
       breadcrumbLabel="Skill Development"
       baseRoute="/csr/skill-development"

@@ -1,12 +1,16 @@
-import { CSRDetailsSection } from "@/components/sections/csr/details";
+import { ActivityDetailsLoader } from "@/components/sections/csr/activity-details-loader";
 
-export default function StaffWelfareDetailsPage() {
-  // Reuse the CSR module. Empty props are passed by default.
+interface StaffWelfareDetailsPageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default function StaffWelfareDetailsPage({ params }: StaffWelfareDetailsPageProps) {
   return (
-    <CSRDetailsSection
-      activity={null}
+    <ActivityDetailsLoader
+      category="staff-welfare"
       breadcrumbLabel="Staff Welfare"
       baseRoute="/csr/staff-welfare"
+      paramsPromise={params}
     />
   );
 }

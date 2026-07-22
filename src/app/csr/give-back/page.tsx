@@ -1,12 +1,9 @@
-import { CSRListingSection } from "@/components/sections/csr";
+import { CategoryListingLoader } from "@/components/sections/csr/category-listing-loader";
 
 export default function GiveBackPage() {
-  // Reuse the CSR module. Empty props are passed by default.
   return (
-    <CSRListingSection
-      activities={[]}
-      isLoading={false}
-      error={null}
+    <CategoryListingLoader
+      category="give-back"
       pageTitle="Give Back Initiatives"
       breadcrumbLabel="Give Back"
       baseRoute="/csr/give-back"

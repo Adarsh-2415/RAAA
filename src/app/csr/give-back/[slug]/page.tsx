@@ -1,12 +1,16 @@
-import { CSRDetailsSection } from "@/components/sections/csr/details";
+import { ActivityDetailsLoader } from "@/components/sections/csr/activity-details-loader";
 
-export default function GiveBackDetailsPage() {
-  // Reuse the CSR module. Empty props are passed by default.
+interface GiveBackDetailsPageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default function GiveBackDetailsPage({ params }: GiveBackDetailsPageProps) {
   return (
-    <CSRDetailsSection
-      activity={null}
+    <ActivityDetailsLoader
+      category="give-back"
       breadcrumbLabel="Give Back"
       baseRoute="/csr/give-back"
+      paramsPromise={params}
     />
   );
 }

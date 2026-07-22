@@ -95,6 +95,26 @@ export default function CareersPage() {
 
       if (insertErr) throw insertErr;
 
+      // Trigger email notification background dispatch
+      try {
+        await fetch("/api/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "career",
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            message: formData.message,
+            resumeUrl: resumeUrl,
+            photoUrl: photoUrl,
+            role: "General Applicant", // default fallback designation
+          }),
+        });
+      } catch (mailErr) {
+        console.warn("Background career notification dispatch failed:", mailErr);
+      }
+
       setSubmitted(true);
       // Reset Form
       setFormData({ name: "", phone: "", email: "", message: "" });

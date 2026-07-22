@@ -6,6 +6,7 @@ import TopBar from "@/components/layout/TopBar";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import SmoothScroll from "@/components/layout/SmoothScroll";
+import { SettingsProvider } from "@/components/providers/settings-provider";
 
 interface ClientLayoutWrapperProps {
   children: React.ReactNode;
@@ -24,11 +25,13 @@ export function ClientLayoutWrapper({ children }: ClientLayoutWrapperProps) {
   }
 
   return (
-    <SmoothScroll>
-      <Navbar />
-      {children}
-      <Footer />
-    </SmoothScroll>
+    <SettingsProvider>
+      <SmoothScroll>
+        <Navbar />
+        {children}
+        <Footer />
+      </SmoothScroll>
+    </SettingsProvider>
   );
 }
 export default ClientLayoutWrapper;

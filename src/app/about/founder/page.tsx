@@ -1,12 +1,55 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Quote, Scale, Briefcase, Heart, GraduationCap } from "lucide-react";
+import { Quote, Scale, Briefcase, Heart, GraduationCap, Loader2 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { FounderPageData } from "@/types/founder";
 import { founderConfig } from "@/components/sections/welcome/founder-config";
 
 export default function FounderPage() {
-  const c = founderConfig;
+  const supabase = createClient();
+  const [c, setC] = useState<FounderPageData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadFounder() {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from("founder_page")
+          .select("*")
+          .eq("status", "published")
+          .order("created_at", { ascending: false })
+          .limit(1);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          setC(data[0] as FounderPageData);
+        } else {
+          // Fallback to static config if no published row exists in DB
+          setC(founderConfig as any);
+        }
+      } catch (err) {
+        console.error("Load founder dynamic page error:", err);
+        setC(founderConfig as any);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadFounder();
+  }, [supabase]);
+
+  if (loading) {
+    return (
+      <div className="w-full bg-bg-warm min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-accent-gold" />
+      </div>
+    );
+  }
+
+  if (!c) return null;
 
   return (
     <div className="w-full bg-bg-warm min-h-screen">
@@ -19,9 +62,15 @@ export default function FounderPage() {
             
             {/* Left side portrait placeholder */}
             <div className="lg:col-span-4 flex justify-center">
-              <div className="relative w-48 h-48 sm:w-56 sm:h-56 rounded-full border-4 border-accent-gold/30 bg-bg-warm/10 overflow-hidden flex items-center justify-center shadow-lg">
-                <GraduationCap className="w-20 h-20 text-accent-gold/45" />
-              </div>
+              {c.featured_image_url ? (
+                <div className="relative w-48 h-48 sm:w-56 sm:h-56 rounded-full border-4 border-accent-gold/30 bg-bg-warm/10 overflow-hidden shadow-lg">
+                  <img src={c.featured_image_url} alt={c.name} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="relative w-48 h-48 sm:w-56 sm:h-56 rounded-full border-4 border-accent-gold/30 bg-bg-warm/10 overflow-hidden flex items-center justify-center shadow-lg">
+                  <GraduationCap className="w-20 h-20 text-accent-gold/45" />
+                </div>
+              )}
             </div>
 
             {/* Right side credentials info */}
@@ -34,7 +83,7 @@ export default function FounderPage() {
               </h1>
               <div className="h-1 w-12 bg-accent-gold mx-auto lg:mx-0 rounded-full" />
               <p className="text-xs sm:text-sm text-white/70 max-w-xl leading-relaxed font-sans">
-                A litigation lawyer representing individual and corporate bodies in taxation practice for almost four decades.
+                {c.sub_title}
               </p>
             </div>
 
@@ -94,87 +143,91 @@ export default function FounderPage() {
         </motion.div>
 
         {/* Section 3: Career Journey (Vertical Timeline) */}
-        <div className="space-y-12">
-          <div className="text-center">
-            <span className="text-xs font-bold tracking-widest text-accent-gold uppercase">
-              Milestones
-            </span>
-            <h2 className="mt-2 text-3xl font-extrabold text-primary-navy font-heading tracking-tight">
-              Career Journey
-            </h2>
-            <div className="mt-3 h-1 w-10 bg-accent-gold mx-auto rounded-full" />
-          </div>
+        {c.milestones && c.milestones.length > 0 && (
+          <div className="space-y-12">
+            <div className="text-center">
+              <span className="text-xs font-bold tracking-widest text-accent-gold uppercase">
+                Milestones
+              </span>
+              <h2 className="mt-2 text-3xl font-extrabold text-primary-navy font-heading tracking-tight">
+                Career Journey
+              </h2>
+              <div className="mt-3 h-1 w-10 bg-accent-gold mx-auto rounded-full" />
+            </div>
 
-          <div className="relative border-l border-border-custom max-w-3xl mx-auto pl-6 sm:pl-8 space-y-10">
-            {c.milestones.map((event, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="relative"
-              >
-                <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-4.5 h-4.5 rounded-full border-4 border-bg-warm bg-accent-gold shadow-sm" />
-                <div className="bg-white p-6 border border-border-custom/60 rounded-xl shadow-xs flex flex-col space-y-1">
-                  <span className="font-heading font-extrabold text-lg text-accent-gold">
-                    {event.year}
-                  </span>
-                  <h3 className="text-base font-bold text-primary-navy font-heading">
-                    {event.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-text-secondary leading-relaxed font-sans mt-1">
-                    {event.desc}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Section 4: Areas of Expertise */}
-        <div className="space-y-12">
-          <div className="text-center">
-            <span className="text-xs font-bold tracking-widest text-accent-gold uppercase">
-              Focus Areas
-            </span>
-            <h2 className="mt-2 text-3xl font-extrabold text-primary-navy font-heading tracking-tight">
-              Areas of Expertise
-            </h2>
-            <div className="mt-3 h-1 w-10 bg-accent-gold mx-auto rounded-full" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {c.expertise.map((item, index) => {
-              const icons = [
-                <Scale key="1" className="w-5 h-5" />,
-                <Briefcase key="2" className="w-5 h-5" />,
-              ];
-              return (
+            <div className="relative border-l border-border-custom max-w-3xl mx-auto pl-6 sm:pl-8 space-y-10">
+              {c.milestones.map((event, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="p-6 bg-white border border-border-custom/80 rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-4"
+                  className="relative"
                 >
-                  <div className="p-3 bg-bg-warm rounded-lg text-accent-gold">
-                    {icons[index % icons.length]}
-                  </div>
-                  <div className="flex flex-col space-y-1">
+                  <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-4.5 h-4.5 rounded-full border-4 border-bg-warm bg-accent-gold shadow-sm" />
+                  <div className="bg-white p-6 border border-border-custom/60 rounded-xl shadow-xs flex flex-col space-y-1">
+                    <span className="font-heading font-extrabold text-lg text-accent-gold">
+                      {event.year}
+                    </span>
                     <h3 className="text-base font-bold text-primary-navy font-heading">
-                      {item.title}
+                      {event.title}
                     </h3>
-                    <p className="text-xs sm:text-sm text-text-secondary leading-relaxed font-sans">
-                      {item.desc}
+                    <p className="text-xs sm:text-sm text-text-secondary leading-relaxed font-sans mt-1">
+                      {event.desc}
                     </p>
                   </div>
                 </motion.div>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Section 4: Areas of Expertise */}
+        {c.expertise && c.expertise.length > 0 && (
+          <div className="space-y-12">
+            <div className="text-center">
+              <span className="text-xs font-bold tracking-widest text-accent-gold uppercase">
+                Focus Areas
+              </span>
+              <h2 className="mt-2 text-3xl font-extrabold text-primary-navy font-heading tracking-tight">
+                Areas of Expertise
+              </h2>
+              <div className="mt-3 h-1 w-10 bg-accent-gold mx-auto rounded-full" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {c.expertise.map((item, index) => {
+                const icons = [
+                  <Scale key="1" className="w-5 h-5" />,
+                  <Briefcase key="2" className="w-5 h-5" />,
+                ];
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="p-6 bg-white border border-border-custom/80 rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-4"
+                  >
+                    <div className="p-3 bg-bg-warm rounded-lg text-accent-gold">
+                      {icons[index % icons.length]}
+                    </div>
+                    <div className="flex flex-col space-y-1">
+                      <h3 className="text-base font-bold text-primary-navy font-heading">
+                        {item.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-text-secondary leading-relaxed font-sans">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Section 7: Community Contribution Social Impact Card */}
         <motion.div
@@ -190,13 +243,13 @@ export default function FounderPage() {
           </div>
           <div className="flex flex-col space-y-3">
             <span className="text-xs font-bold tracking-widest text-accent-gold uppercase">
-              {c.socialImpact.title}
+              {c.social_impact_title}
             </span>
             <h3 className="text-lg font-bold text-primary-navy font-heading">
-              {c.socialImpact.role}
+              {c.social_impact_role}
             </h3>
             <p className="text-xs sm:text-sm text-text-secondary leading-relaxed font-sans">
-              {c.socialImpact.desc}
+              {c.social_impact_desc}
             </p>
           </div>
         </motion.div>

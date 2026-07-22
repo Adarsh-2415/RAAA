@@ -1,12 +1,9 @@
-import { CSRListingSection } from "@/components/sections/csr";
+import { CategoryListingLoader } from "@/components/sections/csr/category-listing-loader";
 
 export default function StaffWelfarePage() {
-  // Reuse the CSR module. Empty props are passed by default.
   return (
-    <CSRListingSection
-      activities={[]}
-      isLoading={false}
-      error={null}
+    <CategoryListingLoader
+      category="staff-welfare"
       pageTitle="Staff Welfare Programs"
       breadcrumbLabel="Staff Welfare"
       baseRoute="/csr/staff-welfare"

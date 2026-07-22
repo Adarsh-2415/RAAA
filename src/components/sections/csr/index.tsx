@@ -18,7 +18,7 @@ export default function CSRListingSection({
 }: CSRListingProps) {
   return (
     <div className="w-full bg-bg-warm min-h-screen">
-      
+
       {/* Hero Banner */}
       <CSRHero title={pageTitle} breadcrumbLabel={breadcrumbLabel} />
 
@@ -29,12 +29,12 @@ export default function CSRListingSection({
           <CSRErrorState title="Unable to Load Activities" onRetry={() => window.location.reload()} />
         ) : (
           <div className="space-y-12">
-            
+
             {/* Empty State / Listing Grid */}
             {activities.length === 0 ? (
               <CSREmptyState
                 title={`No ${breadcrumbLabel} Activities Available`}
-                description={`${breadcrumbLabel} workshops and CSR activities will appear here once published through the CMS.`}
+                description={`${breadcrumbLabel} workshops and CSR activities will appear here once published through the Admin.`}
               />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

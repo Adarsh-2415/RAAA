@@ -1,10 +1,10 @@
-"use client";
-
-import React from "react";
 import Link from "next/link";
-import { Mail, Phone, MapPin, Instagram, Linkedin, MessageCircle } from "lucide-react";
+import { Mail, Phone, MapPin, Instagram, Linkedin, MessageCircle, Facebook, Twitter } from "lucide-react";
+import { useGlobalSettings } from "@/components/providers/settings-provider";
 
 export default function Footer() {
+  const settings = useGlobalSettings();
+
   return (
     <footer className="w-full bg-[#0F172A] text-white/80 border-t-2 border-accent-gold z-10 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-6">
@@ -25,27 +25,39 @@ export default function Footer() {
             </p>
             {/* Social Media Link Icons */}
             <div className="flex items-center gap-3">
-              <a
-                href="#"
-                className="w-8 h-8 rounded-full border border-white/10 hover:border-accent-gold hover:text-accent-gold flex items-center justify-center transition-all duration-200"
-                aria-label="Instagram"
-              >
-                <Instagram size={14} />
-              </a>
-              <a
-                href="#"
-                className="w-8 h-8 rounded-full border border-white/10 hover:border-accent-gold hover:text-accent-gold flex items-center justify-center transition-all duration-200"
-                aria-label="LinkedIn"
-              >
-                <Linkedin size={14} />
-              </a>
-              <a
-                href="#"
-                className="w-8 h-8 rounded-full border border-white/10 hover:border-accent-gold hover:text-accent-gold flex items-center justify-center transition-all duration-200"
-                aria-label="Threads"
-              >
-                <MessageCircle size={14} />
-              </a>
+              {settings.facebook && settings.facebook !== "#" && (
+                <a
+                  href={settings.facebook}
+                  className="w-8 h-8 rounded-full border border-white/10 hover:border-accent-gold hover:text-accent-gold flex items-center justify-center transition-all duration-200"
+                  aria-label="Facebook"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Facebook size={14} />
+                </a>
+              )}
+              {settings.linkedin && settings.linkedin !== "#" && (
+                <a
+                  href={settings.linkedin}
+                  className="w-8 h-8 rounded-full border border-white/10 hover:border-accent-gold hover:text-accent-gold flex items-center justify-center transition-all duration-200"
+                  aria-label="LinkedIn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Linkedin size={14} />
+                </a>
+              )}
+              {settings.twitter && settings.twitter !== "#" && (
+                <a
+                  href={settings.twitter}
+                  className="w-8 h-8 rounded-full border border-white/10 hover:border-accent-gold hover:text-accent-gold flex items-center justify-center transition-all duration-200"
+                  aria-label="Twitter"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Twitter size={14} />
+                </a>
+              )}
             </div>
           </div>
 
@@ -56,32 +68,32 @@ export default function Footer() {
             </span>
             <ul className="space-y-2 text-xs sm:text-sm font-sans text-white/60">
               <li>
-                <Link href="#" className="hover:text-accent-gold transition-colors duration-200">
+                <Link href="/services/accounting-auditing" className="hover:text-accent-gold transition-colors duration-200">
                   Accounting & Auditing Services
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-accent-gold transition-colors duration-200">
+                <Link href="/services/bpo" className="hover:text-accent-gold transition-colors duration-200">
                   Business Process Outsourcing
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-accent-gold transition-colors duration-200">
+                <Link href="/services/startup-services" className="hover:text-accent-gold transition-colors duration-200">
                   Business Start-Up Service
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-accent-gold transition-colors duration-200">
+                <Link href="/services/vat-consultancy" className="hover:text-accent-gold transition-colors duration-200">
                   Commercial Tax (VAT) Consultancy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-accent-gold transition-colors duration-200">
+                <Link href="/services/gst-consultancy" className="hover:text-accent-gold transition-colors duration-200">
                   Goods & Services Tax Consultant
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-accent-gold transition-colors duration-200">
+                <Link href="/services/income-tax" className="hover:text-accent-gold transition-colors duration-200">
                   Income Tax Advisory
                 </Link>
               </li>
@@ -96,22 +108,18 @@ export default function Footer() {
             <ul className="space-y-4 text-xs sm:text-sm font-sans text-white/60">
               <li className="flex items-start gap-2">
                 <MapPin size={16} className="text-accent-gold shrink-0 mt-0.5" />
-                <span>
-                  354 C, 30 Civil Lines,<br />
-                  Near Indian Institute of Technology,<br />
-                  Roorkee, Uttarakhand 247667
-                </span>
+                <span className="whitespace-pre-wrap">{settings.address}</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone size={14} className="text-accent-gold shrink-0" />
-                <a href="tel:+911332273737" className="hover:text-accent-gold transition-colors duration-200">
-                  +91-1332-273737
+                <a href={`tel:${settings.phone.replace(/[^0-9+]/g, "")}`} className="hover:text-accent-gold transition-colors duration-200">
+                  {settings.phone}
                 </a>
               </li>
               <li className="flex items-center gap-2">
                 <Mail size={14} className="text-accent-gold shrink-0" />
-                <a href="mailto:mail@raaa.in" className="hover:text-accent-gold transition-colors duration-200">
-                  mail@raaa.in
+                <a href={`mailto:${settings.email}`} className="hover:text-accent-gold transition-colors duration-200">
+                  {settings.email}
                 </a>
               </li>
             </ul>

@@ -1,12 +1,16 @@
-import { CSRDetailsSection } from "@/components/sections/csr/details";
+import { ActivityDetailsLoader } from "@/components/sections/csr/activity-details-loader";
 
-export default function SkillDevelopmentDetailsPage() {
-  // Built around CMS data. Empty props are passed by default.
+interface SkillDevelopmentDetailsPageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default function SkillDevelopmentDetailsPage({ params }: SkillDevelopmentDetailsPageProps) {
   return (
-    <CSRDetailsSection
-      activity={null}
+    <ActivityDetailsLoader
+      category="skill-development"
       breadcrumbLabel="Skill Development"
       baseRoute="/csr/skill-development"
+      paramsPromise={params}
     />
   );
 }

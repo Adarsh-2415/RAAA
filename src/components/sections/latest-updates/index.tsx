@@ -82,9 +82,48 @@ export default function LatestUpdatesSection({
                 />
               )
             ) : (
-              // Prepared grid container (renders nothing currently since articles is locked empty)
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {/* Dynamically mapped UpdateCards will render here */}
+                {articles.map((item) => (
+                  <div
+                    key={item.slug}
+                    className="bg-white border border-border-custom/80 rounded-3xl overflow-hidden shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between"
+                  >
+                    <div>
+                      {item.featuredImage ? (
+                        <div className="relative aspect-video bg-gray-100 border-b border-border-custom/40">
+                          <img src={item.featuredImage} alt={item.title} className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <div className="relative aspect-video bg-bg-warm border-b border-border-custom/40 flex items-center justify-center text-accent-gold">
+                          <span className="text-xs font-bold uppercase tracking-wider font-sans">No Cover Image</span>
+                        </div>
+                      )}
+                      
+                      <div className="p-6 space-y-3">
+                        <div className="flex items-center justify-between text-[10px] font-bold text-text-secondary/60 font-sans uppercase tracking-wider">
+                          <span>{item.category}</span>
+                          <span>{new Date(item.publishDate).toLocaleDateString()}</span>
+                        </div>
+                        <h3 className="text-lg font-bold text-primary-navy font-heading tracking-tight leading-snug line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-text-secondary font-sans leading-relaxed line-clamp-3">
+                          {item.excerpt}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-6 pt-0">
+                      <a
+                        href={`/latest-updates/${item.slug}`}
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E56E58] hover:text-[#C9A227] transition-colors duration-150 font-sans uppercase tracking-wider"
+                      >
+                        <span>Read More</span>
+                        <span>&rarr;</span>
+                      </a>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
 

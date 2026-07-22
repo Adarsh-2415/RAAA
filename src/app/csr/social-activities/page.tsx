@@ -1,12 +1,9 @@
-import { CSRListingSection } from "@/components/sections/csr";
+import { CategoryListingLoader } from "@/components/sections/csr/category-listing-loader";
 
 export default function SocialActivitiesPage() {
-  // Reuse the CSR module. Empty props are passed by default.
   return (
-    <CSRListingSection
-      activities={[]}
-      isLoading={false}
-      error={null}
+    <CategoryListingLoader
+      category="social-activities"
       pageTitle="Social Activities"
       breadcrumbLabel="Social Activities"
       baseRoute="/csr/social-activities"

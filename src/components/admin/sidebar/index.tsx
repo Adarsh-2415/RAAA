@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   LayoutDashboard, FileText, Briefcase, Award, Users, 
-  Mail, GraduationCap, Key, LogOut, ChevronLeft, ChevronRight, Menu, X 
+  Mail, GraduationCap, Key, LogOut, ChevronLeft, ChevronRight, Menu, X, FolderTree, Settings
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -19,8 +19,10 @@ export function AdminSidebar() {
 
   const menuItems = [
     { label: "Dashboard", href: "/admin/dashboard", icon: <LayoutDashboard size={18} /> },
+    { label: "Manage Pages", href: "/admin/manage-pages", icon: <FolderTree size={18} /> },
     { label: "Contact Enquiries", href: "/admin/contact-enquiries", icon: <Mail size={18} /> },
     { label: "Careers Forms", href: "/admin/careers", icon: <GraduationCap size={18} /> },
+    { label: "Global Settings", href: "/admin/global-settings", icon: <Settings size={18} /> },
     { label: "Change Password", href: "/admin/change-password", icon: <Key size={18} /> },
   ];
 
